@@ -1,11 +1,13 @@
 package com.Wisdom_Training.controller;
 
+import com.Wisdom_Training.dto.RequestResponse;
 import com.Wisdom_Training.dto.request.CategoryDTO;
 import com.Wisdom_Training.dto.request.ProductDTO;
 import com.Wisdom_Training.dto.respone.CategoryResponse;
 import com.Wisdom_Training.dto.respone.ProductResponse;
 import com.Wisdom_Training.entity.Category;
 import com.Wisdom_Training.entity.Product;
+import com.Wisdom_Training.exception.ExceptionResponse;
 import com.Wisdom_Training.service.CategoryService;
 import com.Wisdom_Training.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +32,10 @@ public class CategoryController {
     public ResponseEntity<?> createCategory(@RequestBody CategoryDTO categoryDTO){
         try{
             categoryService.createCategory(categoryDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Tạo category thành công!");
+            return ResponseEntity.status(HttpStatus.CREATED).body(new RequestResponse("Tạo category thành công!"));
         } catch (Exception e)
         {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lỗi khi tạo category: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ExceptionResponse("Lỗi khi tạo category: " + e.getMessage()));
         }
     }
 
@@ -42,10 +44,10 @@ public class CategoryController {
         try{
             List<Category> listCategory = categoryService.getAll();
             List<CategoryResponse> listDTO = listCategory.stream().map(categoryService::todo).toList();;
-            return ResponseEntity.ok(Map.of("message", "Lấy danh sách category thành công", "response", listDTO));
+            return ResponseEntity.ok(new RequestResponse(listDTO,"Lấy danh sách category thành công!"));
         } catch (Exception e)
         {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Lỗi khi lấy danh sách category: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ExceptionResponse("Lỗi khi lấy danh sách category: " + e.getMessage()));
         }
     }
 
@@ -54,9 +56,9 @@ public class CategoryController {
         try{
             Category category = categoryService.getCategoryById(id);
             CategoryResponse dto = categoryService.todo(category);
-            return ResponseEntity.ok(Map.of("message", "Lấy category thành công", "response", dto));
+            return ResponseEntity.ok(new RequestResponse(dto,"Lấy category thành công!"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ExceptionResponse("Lỗi khi lấy category: " + e.getMessage()));
         }
     }
 
@@ -65,10 +67,10 @@ public class CategoryController {
         try{
             Category response = categoryService.getCategoryById(id);
             categoryService.updateCategory(id, categoryDTO);
-            return ResponseEntity.ok(Map.of("message", "Cập nhật category thành công"));
+            return ResponseEntity.ok(new RequestResponse("Cập nhật category thành công"));
         } catch (Exception e)
         {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lỗi khi cập nhật category: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ExceptionResponse("Lỗi khi cập nhật category: " + e.getMessage()));
         }
     }
 
@@ -76,10 +78,10 @@ public class CategoryController {
     public ResponseEntity<?> deleteCategory(@PathVariable("id") int id) {
         try{
             categoryService.deleteCategory(id);
-            return ResponseEntity.ok(Map.of("message", "Xóa category thành công"));
+            return ResponseEntity.ok(new RequestResponse("Xóa category thành công"));
         } catch (Exception e)
         {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lỗi khi xóa category: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ExceptionResponse("Lỗi khi xóa category: " + e.getMessage()));
         }
     }
 
@@ -89,15 +91,10 @@ public class CategoryController {
             Pageable pageable = PageRequest.of(page, size);
             Page<Product> products = productService.getAllByCategory(categoryId, pageable);
             Page<ProductResponse> pageProducts = products.map(productService::todo);
-            return ResponseEntity.ok(Map.of(
-                    "message", "Lấy danh sách sản phẩm thành công",
-                    "page", products.getNumber(),
-                    "totalPages", products.getTotalPages(),
-                    "response", pageProducts
-            ));
+            return ResponseEntity.ok(new RequestResponse(pageProducts, "Lấy danh sách category thành công."));
         } catch (Exception e)
         {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lỗi khi xóa category: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ExceptionResponse("Lỗi khi xóa category: " + e.getMessage()));
         }
     }
 
@@ -106,9 +103,9 @@ public class CategoryController {
         try {
             productDTO.setCategoryId(categoryId);
             productService.createProduct(productDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Tạo product thành công!");
+            return ResponseEntity.status(HttpStatus.CREATED).body(new RequestResponse("Tạo product theo category thành công."));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lỗi khi tạo product: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ExceptionResponse("Lỗi khi tạo category: " + e.getMessage()));
         }
     }
 }
