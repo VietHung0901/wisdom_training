@@ -3,6 +3,7 @@ package com.Wisdom_Training.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,10 +34,19 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable()) // tắt CSRF
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/accounts/**").permitAll() // public API
-                        .requestMatchers("/api/categories/**").hasAuthority("ADMIN") // chỉ ADMIN
-                        .requestMatchers("/api/products/**").hasAnyAuthority("USER", "ADMIN") // USER hoặc ADMIN
-                        .anyRequest().authenticated() // các API khác chỉ cần đăng nhập
+                        // Các API không cần xác thực
+                        .requestMatchers(HttpMethod.GET, APIURL.URL_ANONYMOUS_GET).permitAll()
+                        .requestMatchers(HttpMethod.POST, APIURL.URL_ANONYMOUS_POST).permitAll()
+
+                        // Các API cần quyền ADMIN
+                        .requestMatchers(HttpMethod.GET, APIURL.URL_ADMIN_GET).hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, APIURL.URL_ADMIN_POST).hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, APIURL.URL_ADMIN_PUT).hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, APIURL.URL_ADMIN_PATCH).hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, APIURL.URL_ADMIN_DELETE).hasAuthority("ADMIN")
+
+                        // các API khác chỉ cần đăng nhập
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT là stateless
                 .httpBasic(basic -> {}); // có thể bỏ nếu không dùng Basic Auth

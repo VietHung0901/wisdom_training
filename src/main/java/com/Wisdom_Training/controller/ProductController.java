@@ -38,7 +38,7 @@ public class ProductController {
         try {
             Product product = productService.getProductById(id);
             ProductResponse productResponse = productService.todo(product);
-            return ResponseEntity.ok(new RequestResponse("Lấy product thành công"));
+            return ResponseEntity.ok(new RequestResponse(productResponse, "Lấy product thành công"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ExceptionResponse("Lỗi khi lấy product: " + e.getMessage()));
         }
@@ -81,7 +81,7 @@ public class ProductController {
             Pageable pageable = PageRequest.of(page, size);
             Page<Product> listProduct = productService.getPaginatedProducts(pageable);
             Page<ProductResponse> response = listProduct.map(productService::todo);
-            return ResponseEntity.ok(new RequestResponse("Lấy danh sách product thành công"));
+            return ResponseEntity.ok(new RequestResponse(response,"Lấy danh sách product thành công"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ExceptionResponse("Lỗi khi lấy danh sách product: " + e.getMessage()));
         }
