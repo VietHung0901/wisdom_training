@@ -112,6 +112,9 @@
 						<exclude>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
+                            <configuration>
+                                <mainClass>com.Wisdom_Training.WisdomTrainingApplication</mainClass>
+                            </configuration>
 						</exclude>
 					</excludes>
 				</configuration>
